@@ -1,0 +1,135 @@
+{
+	"company": "Armada Atlas Operations",
+	"date": "2026-03-07",
+	"summary": {
+		"total_terminals": 50,
+		"online": 43,
+		"offline": 7,
+		"critical_alerts": 3
+	},
+	"terminals": [
+		{
+			"id": "VESSEL-07",
+			"name": "MV Arabian Star",
+			"location": "Arabian Sea",
+			"route": "Mumbai → Muscat",
+			"status": "offline",
+			"hours_offline": 3,
+			"data_used_gb": 4.8,
+			"data_limit_gb": 5,
+			"signal_strength": 0,
+			"last_seen": "2026-03-07T04:23:00",
+			"alert": "Satellite link lost"
+		},
+		{
+			"id": "VESSEL-12",
+			"name": "MV Kerala Express",
+			"location": "Laccadive Sea",
+			"route": "Kochi → Colombo",
+			"status": "online",
+			"data_used_gb": 4.9,
+			"data_limit_gb": 5,
+			"signal_strength": 72,
+			"alert": "Data limit almost reached"
+		},
+		{
+			"id": "VESSEL-23",
+			"name": "MV Indian Pioneer",
+			"location": "Bay of Bengal",
+			"route": "Chennai → Singapore",
+			"status": "online",
+			"data_used_gb": 2.1,
+			"data_limit_gb": 5,
+			"signal_strength": 45,
+			"alert": "Weak satellite signal"
+		},
+		{
+			"id": "VESSEL-31",
+			"name": "MV Gulf Trader",
+			"location": "Persian Gulf",
+			"route": "Dubai → Karachi",
+			"status": "offline",
+			"hours_offline": 7,
+			"data_used_gb": 1.2,
+			"data_limit_gb": 5,
+			"signal_strength": 0,
+			"last_seen": "2026-03-07T00:15:00",
+			"alert": "Terminal unresponsive"
+		},
+		{
+			"id": "VESSEL-45",
+			"name": "MV Malabar Coast",
+			"location": "Kochi Port",
+			"route": "Docked",
+			"status": "online",
+			"data_used_gb": 3.2,
+			"data_limit_gb": 5,
+			"signal_strength": 98,
+			"alert": "Firmware update available"
+		},
+		{
+			"id": "VESSEL-18",
+			"name": "MV Red Sea Runner",
+			"location": "Red Sea",
+			"route": "Jeddah → Suez",
+			"status": "online",
+			"data_used_gb": 1.8,
+			"data_limit_gb": 5,
+			"signal_strength": 88,
+			"alert": null
+		},
+		{
+			"id": "VESSEL-09",
+			"name": "MV Pacific Bridge",
+			"location": "Andaman Sea",
+			"route": "Port Blair → Yangon",
+			"status": "online",
+			"data_used_gb": 0.9,
+			"data_limit_gb": 5,
+			"signal_strength": 91,
+			"alert": null
+		}
+	],
+	"regional_issues": [
+		{
+			"region": "Arabian Sea",
+			"issue": "Atmospheric interference causing signal degradation",
+			"affected_terminals": [
+				"VESSEL-07",
+				"VESSEL-14",
+				"VESSEL-19",
+				"VESSEL-33",
+				"VESSEL-41"
+			],
+			"since": "2026-03-06T18:00:00"
+		}
+	],
+	"upcoming_maintenance": [
+		{
+			"terminal_id": "VESSEL-03",
+			"vessel_name": "MV Sunrise Carrier",
+			"date": "2026-03-10",
+			"type": "Antenna realignment"
+		},
+		{
+			"terminal_id": "VESSEL-18",
+			"vessel_name": "MV Red Sea Runner",
+			"date": "2026-03-11",
+			"type": "Firmware upgrade"
+		}
+	],
+	"data_usage": {
+		"total_gb_used": 187,
+		"total_gb_limit": 250,
+		"projected_exceed_date": "2026-03-10",
+		"cost_per_excess_gb": 2.5
+	},
+	"last_week": {
+		"total_terminals": 50,
+		"online": 47,
+		"offline": 3,
+		"critical_alerts": 1,
+		"data_gb_used": 142,
+		"uptime_percentage": 94
+	}
+}

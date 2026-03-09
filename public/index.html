@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Fleet Operations Briefing</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>Fleet Operations Center</h1>
+				<p id="date"></p>
+			</div>
+
+			<div class="controls">
+				<select id="roleSelect">
+					<option value="Fleet Manager">Fleet Manager</option>
+					<option value="Safety Officer">Safety Officer</option>
+					<option value="NOC Analyst">NOC Analyst</option>
+				</select>
+				<button id="generateBtn" onclick="getBriefing()">
+					Generate Briefing
+				</button>
+			</div>
+
+			<div class="stats">
+				<div class="stat-card green">
+					<h3>43</h3>
+					<p>Online</p>
+				</div>
+				<div class="stat-card red">
+					<h3>7</h3>
+					<p>Offline</p>
+				</div>
+				<div class="stat-card yellow">
+					<h3>3</h3>
+					<p>Critical Alerts</p>
+				</div>
+				<div class="stat-card blue">
+					<h3>50</h3>
+					<p>Total Devices</p>
+				</div>
+			</div>
+
+			<div class="briefing-box" id="briefingBox">
+				<div class="placeholder">
+					<p>👆 Select your role and click Generate Briefing</p>
+				</div>
+			</div>
+		</div>
+		<div class="chat-section">
+			<h2>💬 Ask Your Fleet</h2>
+			<div class="chat-box" id="chatBox">
+				<div class="chat-message bot">
+					👋 Hi! Ask me anything about your fleet. Try "Which terminal
+					needs attention most?" or "When will we exceed data limit?"
+				</div>
+			</div>
+			<div class="chat-input">
+				<input
+					type="text"
+					id="chatInput"
+					placeholder="Ask anything about your fleet..."
+					onkeypress="if (event.key === 'Enter') sendMessage();"
+				/>
+				<button onclick="sendMessage()">Send</button>
+			</div>
+		</div>
+		<script src="script.js"></script>
+	</body>
+</html>
