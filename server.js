@@ -58,6 +58,11 @@ app.post("/api/chat", async (req, res) => {
 	res.json({ answer: marked(response.choices[0].message.content) });
 });
 
+app.get("/api/fleet", (req, res) => {
+	const fleetData = require("./data/fleetData.json");
+	res.json(fleetData);
+});
+
 app.listen(process.env.PORT, () => {
 	console.log(`Server running on port ${process.env.PORT}`);
 });

@@ -95,3 +95,73 @@ async function sendMessage() {
 	// Scroll to bottom again
 	chatBox.scrollTop = chatBox.scrollHeight;
 }
+
+async function loadCharts() {
+	const res = await fetch("/api/fleet");
+	const data = await res.json();
+
+	// =============================
+	// 1️⃣ Online vs Offline Chart
+	// =============================
+
+	const online = data.summary.online;
+	const offline = data.summary.offline;
+
+	new Chart(document.getElementById("statusChart"), {
+		type: "doughnut",
+		data: {
+			labels: ["Online", "Offline"],
+			datasets: [
+				{
+					data: [online, offline],
+					backgroundColor: ["#4caf50", "#f44336"],
+				},
+			],
+		},
+	});
+
+	// =============================
+	// 2️⃣ Data Usage per Vessel
+	// =============================
+
+	const vesselNames = data.terminals.map((t) => t.name);
+	const usage = data.terminals.map((t) => t.data_used_gb);
+
+	new Chart(document.getElementById("usageChart"), {
+		type: "bar",
+		data: {
+			labels: vesselNames,
+			datasets: [
+				{
+					label: "Data Used (GB)",
+					data: usage,
+					backgroundColor: "#6c63ff",
+				},
+			],
+		},
+	});
+
+	// =============================
+	// 3️⃣ 30 Day Uptime Trend
+	// =============================
+
+	const days = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
+	const uptime = days.map(() => 95 + Math.random() * 5);
+
+	new Chart(document.getElementById("uptimeChart"), {
+		type: "line",
+		data: {
+			labels: days,
+			datasets: [
+				{
+					label: "Fleet Uptime %",
+					data: uptime,
+					borderColor: "#4caf50",
+					tension: 0.3,
+				},
+			],
+		},
+	});
+}
+
+loadCharts();

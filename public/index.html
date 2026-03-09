@@ -43,6 +43,25 @@
 				</div>
 			</div>
 
+			<div class="stats">
+				<div class="charts">
+					<div class="chart-card">
+						<h3>Fleet Status</h3>
+						<canvas id="statusChart"></canvas>
+					</div>
+
+					<div class="chart-card">
+						<h3>Data Usage per Vessel</h3>
+						<canvas id="usageChart"></canvas>
+					</div>
+
+					<div class="chart-card">
+						<h3>30-Day Uptime Trend</h3>
+						<canvas id="uptimeChart"></canvas>
+					</div>
+				</div>
+			</div>
+
 			<div class="briefing-box" id="briefingBox">
 				<div class="placeholder">
 					<p>👆 Select your role and click Generate Briefing</p>
@@ -67,6 +86,7 @@
 				<button onclick="sendMessage()">Send</button>
 			</div>
 		</div>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<script src="script.js"></script>
 	</body>
 </html>
