@@ -199,7 +199,140 @@ async function loadVesselMap() {
 			Signal: ${vessel.signal_strength || "N/A"}<br>
 			Data Used: ${vessel.data_used_gb} GB
 		`);
+		marker.on("click", () => openVesselModal(vessel));
 	});
 }
 
 loadVesselMap();
+
+let fleetData = null;
+let selectedRole = "Fleet Manager";
+
+async function loadFleet() {
+	const res = await fetch("/api/fleet");
+	fleetData = await res.json();
+
+	renderSidebar();
+}
+
+function renderSidebar() {
+	const vesselList = document.getElementById("vesselList");
+
+	const vessels = [...fleetData.terminals];
+
+	// offline first
+	vessels.sort((a, b) => (a.status === "offline" ? -1 : 1));
+
+	vesselList.innerHTML = "";
+
+	vessels.forEach((v) => {
+		const statusClass =
+			v.status === "online" ? "status-online" : "status-offline";
+
+		const warning = v.status === "offline" ? "⚠️" : "";
+
+		const item = document.createElement("div");
+
+		item.className = "vessel-item";
+
+		item.innerHTML = `
+			<div class="status-dot ${statusClass}"></div>
+			<div class="vessel-name">${v.name}</div>
+			<div class="warning-icon">${warning}</div>
+		`;
+
+		item.onclick = () => openVesselModal(v);
+
+		vesselList.appendChild(item);
+	});
+}
+
+document.getElementById("roleSelect").addEventListener("change", (e) => {
+	selectedRole = e.target.value;
+});
+
+function openVesselModal(vessel) {
+	const modal = document.getElementById("vesselModal");
+
+	document.getElementById("modalVesselName").textContent = vessel.name;
+
+	const content = document.getElementById("modalContent");
+	const actions = document.getElementById("modalActions");
+
+	content.innerHTML = "";
+	actions.innerHTML = "";
+
+	/* ========================= */
+	/* ROLE BASED CONTENT */
+	/* ========================= */
+
+	if (selectedRole === "Fleet Manager") {
+		content.innerHTML = `
+			<p><b>Status:</b> ${vessel.status}</p>
+			<p><b>Route:</b> ${vessel.route}</p>
+			<p><b>Data Used:</b> ${vessel.data_used_gb} GB</p>
+			<p><b>Estimated Cost Impact:</b> $4200</p>
+		`;
+
+		addAction("📞 Call Operations Head");
+		addAction("📧 Escalate to Management");
+		addAction("📊 View Cost Report");
+	} else if (selectedRole === "NOC Analyst") {
+		content.innerHTML = `
+			<p><b>Signal Strength:</b> ${vessel.signal_strength}</p>
+			<p><b>Coordinates:</b> ${vessel.location}</p>
+			<p><b>Hardware Status:</b> Operational</p>
+			<p><b>Alert:</b> ${vessel.alert || "None"}</p>
+		`;
+
+		addAction("📞 Call Vessel");
+		addAction("📡 Attempt Reconnect");
+		addAction("📋 View Full Logs");
+	} else if (selectedRole === "Safety Officer") {
+		content.innerHTML = `
+			<p><b>Crew Count:</b> 18</p>
+			<p><b>Last Contact:</b> ${vessel.last_seen || "Recently"}</p>
+			<p><b>Nearest Coast Guard:</b> Kochi Station</p>
+			<p><b>Distance to Shore:</b> 120 km</p>
+		`;
+
+		addAction("🚨 Alert Coast Guard");
+		addAction("📞 Emergency Call");
+		addAction("🆘 Initiate SAR Protocol");
+	}
+
+	modal.classList.remove("hidden");
+}
+
+function closeVesselModal() {
+	document.getElementById("vesselModal").classList.add("hidden");
+}
+
+function addAction(text) {
+	const btn = document.createElement("button");
+
+	btn.textContent = text;
+
+	btn.onclick = simulateCall;
+
+	document.getElementById("modalActions").appendChild(btn);
+}
+
+function simulateCall() {
+	const overlay = document.getElementById("callOverlay");
+	const status = document.getElementById("callStatus");
+
+	overlay.classList.remove("hidden");
+
+	status.textContent = "Connecting via Iridium Satellite...";
+
+	setTimeout(() => {
+		status.textContent = "Secure satellite link established.";
+	}, 3000);
+
+	setTimeout(() => {
+		overlay.classList.add("hidden");
+	}, 5000);
+}
+
+loadFleet();

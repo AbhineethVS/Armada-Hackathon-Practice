@@ -4,97 +4,154 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Fleet Operations Briefing</title>
+
 		<link rel="stylesheet" href="style.css" />
+
 		<link
 			rel="stylesheet"
 			href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 		/>
 	</head>
+
 	<body>
-		<div class="container">
-			<div class="header">
-				<h1>Fleet Operations Center</h1>
-				<p id="date"></p>
+		<div class="dashboard">
+			<!-- SIDEBAR -->
+			<div class="sidebar">
+				<h2>🛳 Fleet Vessels</h2>
+				<div id="vesselList"></div>
 			</div>
 
-			<div class="controls">
-				<select id="roleSelect">
-					<option value="Fleet Manager">Fleet Manager</option>
-					<option value="Safety Officer">Safety Officer</option>
-					<option value="NOC Analyst">NOC Analyst</option>
-				</select>
-				<button id="generateBtn" onclick="getBriefing()">
-					Generate Briefing
-				</button>
-			</div>
-
-			<div class="stats">
-				<div class="stat-card green">
-					<h3>43</h3>
-					<p>Online</p>
-				</div>
-				<div class="stat-card red">
-					<h3>7</h3>
-					<p>Offline</p>
-				</div>
-				<div class="stat-card yellow">
-					<h3>3</h3>
-					<p>Critical Alerts</p>
-				</div>
-				<div class="stat-card blue">
-					<h3>50</h3>
-					<p>Total Devices</p>
-				</div>
-			</div>
-
-			<div class="stats">
-				<div class="charts">
-					<div class="chart-card">
-						<h3>Fleet Status</h3>
-						<canvas id="statusChart"></canvas>
+			<!-- MAIN CONTENT -->
+			<div class="main">
+				<div class="container">
+					<div class="header">
+						<h1>Fleet Operations Center</h1>
+						<p id="date"></p>
 					</div>
 
-					<div class="chart-card">
-						<h3>Data Usage per Vessel</h3>
-						<canvas id="usageChart"></canvas>
+					<div class="controls">
+						<select id="roleSelect">
+							<option value="Fleet Manager">Fleet Manager</option>
+							<option value="Safety Officer">
+								Safety Officer
+							</option>
+							<option value="NOC Analyst">NOC Analyst</option>
+						</select>
+
+						<button id="generateBtn" onclick="getBriefing()">
+							Generate Briefing
+						</button>
 					</div>
 
-					<div class="chart-card">
-						<h3>30-Day Uptime Trend</h3>
-						<canvas id="uptimeChart"></canvas>
+					<!-- STATS -->
+					<div class="stats">
+						<div class="stat-card green">
+							<h3>43</h3>
+							<p>Online</p>
+						</div>
+
+						<div class="stat-card red">
+							<h3>7</h3>
+							<p>Offline</p>
+						</div>
+
+						<div class="stat-card yellow">
+							<h3>3</h3>
+							<p>Critical Alerts</p>
+						</div>
+
+						<div class="stat-card blue">
+							<h3>50</h3>
+							<p>Total Devices</p>
+						</div>
 					</div>
-				</div>
-			</div>
 
-			<div class="map-section">
-				<h2>🌍 Fleet Vessel Map</h2>
-				<div id="vesselMap"></div>
-			</div>
+					<!-- CHARTS -->
+					<div class="charts">
+						<div class="chart-card">
+							<h3>Fleet Status</h3>
+							<canvas id="statusChart"></canvas>
+						</div>
 
-			<div class="briefing-box" id="briefingBox">
-				<div class="placeholder">
-					<p>👆 Select your role and click Generate Briefing</p>
+						<div class="chart-card">
+							<h3>Data Usage per Vessel</h3>
+							<canvas id="usageChart"></canvas>
+						</div>
+
+						<div class="chart-card">
+							<h3>30-Day Uptime Trend</h3>
+							<canvas id="uptimeChart"></canvas>
+						</div>
+					</div>
+
+					<!-- MAP -->
+					<div class="map-section">
+						<h2>🌍 Fleet Vessel Map</h2>
+						<div id="vesselMap"></div>
+					</div>
+
+					<!-- AI BRIEFING -->
+					<div class="briefing-box" id="briefingBox">
+						<div class="placeholder">
+							<p>
+								👆 Select your role and click Generate Briefing
+							</p>
+						</div>
+					</div>
+
+					<!-- CHAT -->
+					<div class="chat-section">
+						<h2>💬 Ask Your Fleet</h2>
+
+						<div class="chat-box" id="chatBox">
+							<div class="chat-message bot">
+								👋 Hi! Ask me anything about your fleet. Try
+								"Which terminal needs attention most?"
+							</div>
+						</div>
+
+						<div class="chat-input">
+							<input
+								type="text"
+								id="chatInput"
+								placeholder="Ask anything about your fleet..."
+								onkeypress="
+									if (event.key === 'Enter') sendMessage();
+								"
+							/>
+							<button onclick="sendMessage()">Send</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="chat-section">
-			<h2>💬 Ask Your Fleet</h2>
-			<div class="chat-box" id="chatBox">
-				<div class="chat-message bot">
-					👋 Hi! Ask me anything about your fleet. Try "Which terminal
-					needs attention most?" or "When will we exceed data limit?"
-				</div>
-			</div>
-			<div class="chat-input">
-				<input
-					type="text"
-					id="chatInput"
-					placeholder="Ask anything about your fleet..."
-					onkeypress="if (event.key === 'Enter') sendMessage();"
-				/>
-				<button onclick="sendMessage()">Send</button>
+
+		<!-- VESSEL DETAIL MODAL -->
+
+		<div id="vesselModal" class="modal hidden">
+			<div class="modal-content">
+				<span class="close-btn" onclick="closeVesselModal()">✖</span>
+
+				<h2 id="modalVesselName"></h2>
+
+				<div id="modalContent"></div>
+
+				<div id="modalActions" class="modal-actions"></div>
 			</div>
 		</div>
+
+		<!-- CALL SIMULATION -->
+
+		<div id="callOverlay" class="call-overlay hidden">
+			<div class="call-box">
+				<h2>📡 Connecting via Iridium Satellite...</h2>
+
+				<div class="spinner"></div>
+
+				<p id="callStatus">Establishing secure link...</p>
+			</div>
+		</div>
+
 		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<script src="script.js"></script>
