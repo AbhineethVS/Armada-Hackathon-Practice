@@ -165,3 +165,41 @@ async function loadCharts() {
 }
 
 loadCharts();
+
+async function loadVesselMap() {
+	const res = await fetch("/api/fleet");
+	const data = await res.json();
+
+	// Initialize map centered near India
+	const map = L.map("vesselMap").setView([12, 75], 4);
+
+	// OpenStreetMap tiles
+	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		attribution: "&copy; OpenStreetMap contributors",
+	}).addTo(map);
+
+	// Add vessel markers
+	data.terminals.forEach((vessel) => {
+		// Example coordinates (replace with real ones if you add later)
+		const lat = 10 + Math.random() * 15;
+		const lng = 60 + Math.random() * 40;
+
+		const color = vessel.status === "online" ? "green" : "red";
+
+		const marker = L.circleMarker([lat, lng], {
+			radius: 8,
+			color: color,
+			fillColor: color,
+			fillOpacity: 0.8,
+		}).addTo(map);
+
+		marker.bindPopup(`
+			<strong>${vessel.name}</strong><br>
+			Status: ${vessel.status}<br>
+			Signal: ${vessel.signal_strength || "N/A"}<br>
+			Data Used: ${vessel.data_used_gb} GB
+		`);
+	});
+}
+
+loadVesselMap();

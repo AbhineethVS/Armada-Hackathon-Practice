@@ -5,6 +5,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Fleet Operations Briefing</title>
 		<link rel="stylesheet" href="style.css" />
+		<link
+			rel="stylesheet"
+			href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		/>
 	</head>
 	<body>
 		<div class="container">
@@ -62,6 +66,11 @@
 				</div>
 			</div>
 
+			<div class="map-section">
+				<h2>🌍 Fleet Vessel Map</h2>
+				<div id="vesselMap"></div>
+			</div>
+
 			<div class="briefing-box" id="briefingBox">
 				<div class="placeholder">
 					<p>👆 Select your role and click Generate Briefing</p>
@@ -86,6 +95,7 @@
 				<button onclick="sendMessage()">Send</button>
 			</div>
 		</div>
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<script src="script.js"></script>
 	</body>
