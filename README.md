@@ -197,4 +197,4 @@ MIT License — feel free to use, modify and distribute.
 
 ---
 
-<p align="center">Built with ☕ by Team | CET Trivandrum 2026</p>
+<p align="center">Built with ☕ by Team 404_not_found | CET Trivandrum 2026</p>
