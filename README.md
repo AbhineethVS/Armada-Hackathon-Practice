@@ -5,7 +5,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=flat-square&logo=node.js)](https://nodejs.org)
 [![Groq](https://img.shields.io/badge/AI-Groq%20Llama%203.3%2070B-orange?style=flat-square)](https://groq.com)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-[![CodeReCET](https://img.shields.io/badge/CodeReCET-2026-purple?style=flat-square)](https://cet.ac.in)
+[![CodeReCET](https://img.shields.io/badge/CodeReCET-2026-purple?style=flat-square)](https://www.coderecet.live)
 
 ---
 
