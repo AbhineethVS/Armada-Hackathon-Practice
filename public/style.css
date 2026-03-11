@@ -447,3 +447,38 @@ button:disabled {
 		transform: rotate(360deg);
 	}
 }
+
+/* Voice + Dictate button colours */
+#voiceBtn {
+	background: #1db954; /* Spotify green — feels techy */
+}
+
+#voiceBtn:hover {
+	background: #17a347;
+}
+
+#dictateBtn {
+	background: #e74c3c; /* Red mic button */
+	padding: 12px 18px;
+}
+
+#dictateBtn:hover {
+	background: #c0392b;
+}
+
+#dictateBtn:disabled {
+	background: #c0392b;
+	animation: pulse 1s infinite; /* Pulses while listening */
+}
+
+@keyframes pulse {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 1;
+	}
+}

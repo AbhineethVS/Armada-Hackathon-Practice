@@ -1,3 +1,5 @@
+// Tracks whether the last question was spoken or typed
+let usedDictate = false;
 // Show today's date
 document.getElementById("date").textContent = new Date().toLocaleDateString(
 	"en-IN",
@@ -52,17 +54,14 @@ async function sendMessage() {
         </div>
     `;
 
-	// Clear input
 	input.value = "";
 
-	// Show typing indicator
 	chatBox.innerHTML += `
         <div class="chat-message bot" id="typing">
             ⏳ Thinking...
         </div>
     `;
 
-	// Scroll to bottom
 	chatBox.scrollTop = chatBox.scrollHeight;
 
 	try {
@@ -74,15 +73,49 @@ async function sendMessage() {
 
 		const data = await response.json();
 
-		// Remove typing indicator
 		document.getElementById("typing").remove();
 
-		// Show bot response
 		chatBox.innerHTML += `
             <div class="chat-message bot">
                 ${data.answer}
             </div>
         `;
+
+		if (usedDictate) {
+			// Use DOMParser to let the browser strip ALL HTML properly
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(data.answer, "text/html");
+			const plainText = doc.body.innerText
+				.replace(/\u201C|\u201D|\u2018|\u2019/g, "") // curly quotes
+				.replace(/\u2014|\u2013/g, " ") // em/en dash
+				.replace(/\*\*/g, "")
+				.replace(/\*/g, "")
+				.replace(/#{1,6}\s/g, "")
+				.replace(/`{1,3}/g, "")
+				.replace(/\n{2,}/g, ". ")
+				.replace(/\n/g, " ")
+				.trim();
+
+			// Small delay fixes Chrome SpeechSynthesis timing bug
+			setTimeout(() => {
+				const utterance = new SpeechSynthesisUtterance(plainText);
+				utterance.rate = 1;
+				utterance.pitch = 1;
+				utterance.volume = 1;
+
+				// Show the stop button while speaking
+				const stopBtn = document.getElementById("stopChatVoiceBtn");
+				stopBtn.style.display = "inline-block";
+
+				// Hide stop button when done
+				utterance.onend = () => {
+					stopBtn.style.display = "none";
+				};
+
+				window.speechSynthesis.speak(utterance);
+			}, 300);
+			usedDictate = false;
+		}
 	} catch (error) {
 		document.getElementById("typing").remove();
 		chatBox.innerHTML += `
@@ -91,6 +124,8 @@ async function sendMessage() {
             </div>
         `;
 	}
+
+	chatBox.scrollTop = chatBox.scrollHeight;
 
 	// Scroll to bottom again
 	chatBox.scrollTop = chatBox.scrollHeight;
@@ -336,3 +371,135 @@ function simulateCall() {
 }
 
 loadFleet();
+
+// =============================
+// 🔊 VOICE BRIEFING
+// =============================
+
+// This reads the current briefing box text out loud
+// using the browser's built-in SpeechSynthesis API
+// No cost, no API key — it's built into Chrome/Edge/Safari
+
+function readBriefing() {
+	const briefingBox = document.getElementById("briefingBox");
+	const voiceBtn = document.getElementById("voiceBtn");
+
+	// Get the plain text from the briefing box
+	// (strips out any HTML tags so it reads cleanly)
+	const text = briefingBox.innerText;
+
+	// If there's nothing to read, do nothing
+	if (!text || text.includes("Select your role")) {
+		alert("Generate a briefing first!");
+		return;
+	}
+
+	// If already speaking, stop it (acts as a toggle)
+	if (window.speechSynthesis.speaking) {
+		window.speechSynthesis.cancel();
+		voiceBtn.textContent = "🔊 Read Briefing";
+		return;
+	}
+
+	// Create a new speech utterance (the thing that gets spoken)
+	const utterance = new SpeechSynthesisUtterance(text);
+
+	// Voice settings — tweak these if you want
+	utterance.rate = 1; // Speed: 0.5 (slow) to 2 (fast)
+	utterance.pitch = 1; // Pitch: 0 (deep) to 2 (high)
+	utterance.volume = 1; // Volume: 0 to 1
+
+	// Change button text while speaking
+	voiceBtn.textContent = "⏹ Stop Reading";
+
+	// When it finishes, reset the button
+	utterance.onend = () => {
+		voiceBtn.textContent = "🔊 Read Briefing";
+	};
+
+	// Speak it!
+	window.speechSynthesis.speak(utterance);
+}
+
+// =============================
+// 🎙️ DICTATE MODE
+// =============================
+
+// This listens to your voice and types it into the chat input
+// Uses SpeechRecognition API — built into Chrome/Edge
+// NOTE: Does NOT work in Firefox — tell judges to use Chrome
+
+function startDictate() {
+	const dictateBtn = document.getElementById("dictateBtn");
+	const chatInput = document.getElementById("chatInput");
+
+	// Check if browser supports SpeechRecognition
+	const SpeechRecognition =
+		window.SpeechRecognition || window.webkitSpeechRecognition;
+
+	if (!SpeechRecognition) {
+		alert("Voice input not supported in this browser. Please use Chrome!");
+		return;
+	}
+
+	// Create a new recognition instance
+	const recognition = new SpeechRecognition();
+
+	recognition.lang = "en-US"; // Language
+	recognition.interimResults = false; // Only give us the final result
+	recognition.maxAlternatives = 1; // Only need one interpretation
+
+	// While listening, update the button so user knows it's active
+	dictateBtn.textContent = "🔴 Listening...";
+	dictateBtn.disabled = true;
+
+	// Start listening
+	recognition.start();
+
+	// When speech is detected and processed
+	recognition.onresult = (event) => {
+		// Get the spoken text
+		usedDictate = true; // Mark that dictate was used
+		const spokenText = event.results[0][0].transcript;
+
+		// Put it into the chat input box
+		chatInput.value = spokenText;
+
+		// Reset the button
+		dictateBtn.textContent = "🎙️ Dictate";
+		dictateBtn.disabled = false;
+
+		// Auto-send the message after a short delay
+		// so user can see what was typed before it sends
+		setTimeout(() => {
+			sendMessage();
+		}, 800);
+	};
+
+	// If something goes wrong (e.g. no mic permission)
+	recognition.onerror = (event) => {
+		console.error("Speech recognition error:", event.error);
+		dictateBtn.textContent = "🎙️ Dictate";
+		dictateBtn.disabled = false;
+
+		if (event.error === "not-allowed") {
+			alert(
+				"Microphone access denied. Please allow mic permissions in your browser.",
+			);
+		}
+	};
+
+	// When recognition ends for any reason, reset the button
+	recognition.onend = () => {
+		dictateBtn.textContent = "🎙️ Dictate";
+		dictateBtn.disabled = false;
+	};
+}
+
+// =============================
+// ⏹ STOP CHAT VOICE
+// =============================
+function stopChatVoice() {
+	window.speechSynthesis.cancel();
+	document.getElementById("stopChatVoiceBtn").style.display = "none";
+}

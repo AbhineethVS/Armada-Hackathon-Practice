@@ -41,6 +41,9 @@
 						<button id="generateBtn" onclick="getBriefing()">
 							Generate Briefing
 						</button>
+						<button id="voiceBtn" onclick="readBriefing()">
+							🔊 Read Briefing
+						</button>
 					</div>
 
 					<!-- STATS -->
@@ -101,7 +104,22 @@
 
 					<!-- CHAT -->
 					<div class="chat-section">
-						<h2>💬 Ask Your Fleet</h2>
+						<h2>
+							💬 Ask Your Fleet
+							<button
+								id="stopChatVoiceBtn"
+								onclick="stopChatVoice()"
+								style="
+									display: none;
+									margin-left: 10px;
+									background: #e74c3c;
+									padding: 6px 14px;
+									font-size: 0.85rem;
+								"
+							>
+								⏹ Stop
+							</button>
+						</h2>
 
 						<div class="chat-box" id="chatBox">
 							<div class="chat-message bot">
@@ -119,6 +137,9 @@
 									if (event.key === 'Enter') sendMessage();
 								"
 							/>
+							<button id="dictateBtn" onclick="startDictate()">
+								🎙️ Dictate
+							</button>
 							<button onclick="sendMessage()">Send</button>
 						</div>
 					</div>
